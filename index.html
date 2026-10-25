@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta property="og:title" content="Planilha Meu Controle Financeiro">
+<meta property="og:description" content="Descubra para onde vai o seu dinheiro e termine o mês com sobra. Painel automático e relatório com nota do mês.">
+<meta property="og:image" content="img/capa.jpg">
+<meta name="theme-color" content="#0a0a09">
+<title>Planilha Meu Controle Financeiro</title>
+<meta name="description" content="Planilha de controle financeiro no Google Planilhas com painel automático, orçamento, metas, dívidas e relatório com nota do mês.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --bg:#0a0a09; --s1:#131311; --s2:#1b1a17; --line:#2a2823;
+  --fg:#f1eee6; --muted:#9a9488; --gold:#d4af37; --gold2:#f0dc9a; --deep:#8a6d1c; --bad:#ff7a6b;
+  --display:"Syne","Segoe UI",sans-serif; --body:"Manrope","Segoe UI",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:11;background:#0a0a09}
+section{padding-block:84px}
+h1,h2{font-family:var(--display);letter-spacing:-.02em;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:clamp(38px,6vw,68px);font-weight:800}
+h2{font-size:clamp(30px,4.2vw,46px);font-weight:800}
+.gold{color:var(--gold)}
+.eyebrow{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:16px;display:block}
+.lead{font-size:clamp(18px,2vw,21px);color:#cfc9bc;max-width:58ch}
+.btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,#e5c45a,#c99f2b);color:#120f05;font-weight:800;font-size:18px;padding:18px 30px;border-radius:999px;text-decoration:none;box-shadow:0 10px 40px rgba(212,175,55,.25);transition:transform .15s ease, box-shadow .15s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 50px rgba(212,175,55,.35)}
+.btn:focus-visible{outline:3px solid var(--gold2);outline-offset:3px}
+.trust{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin-top:16px}
+.trust span::before{content:"✓ ";color:var(--gold);font-weight:800}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(10,10,9,.88);backdrop-filter:blur(10px);border-bottom:1px solid #2a2310}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.brand{font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:.02em}
+.brand span{color:var(--gold)}
+.bar .btn{padding:10px 18px;font-size:14px;box-shadow:none}
+
+/* hero */
+.hero{padding-block:64px 90px;background:radial-gradient(60% 70% at 85% 10%,#2c230b 0%,transparent 70%)}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center}
+.hero p.lead{margin:22px 0 30px}
+
+/* laptop mockup (real Painel layout) */
+.laptop{position:relative}
+.screen{background:#050505;border:10px solid #1e1d1a;border-bottom-width:14px;border-radius:16px 16px 6px 6px;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px #3a3424}
+.base{height:16px;margin:0 -6%;background:linear-gradient(180deg,#3a3732,#1c1b18);border-radius:0 0 14px 14px}
+.sheet{background:#0b0b0b;padding:14px;font-size:10px;line-height:1.3}
+.sheet .tbar{border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px}
+.sheet .tbar small{display:block;color:var(--gold);font-weight:800;font-size:7px;letter-spacing:.12em}
+.sheet .tbar b{font-size:15px;color:#fff}
+.sheet .sel{display:flex;gap:8px;align-items:center;margin-bottom:10px;font-size:8px;color:var(--muted);font-weight:700}
+.sheet .sel i{font-style:normal;background:var(--gold);color:#000;padding:3px 14px;font-weight:800;font-size:10px}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:10px}
+.cards div{background:#151515;border-top:2px solid var(--gold);padding:6px 6px 7px}
+.cards em{display:block;font-style:normal;font-size:6px;letter-spacing:.06em;color:#8a8a8a;font-weight:800}
+.cards strong{display:block;font-size:10.5px;margin:3px 0 2px;white-space:nowrap}
+.cards small{font-size:6px;color:#8a8a8a}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chart{background:#151515;padding:8px}
+.chart p{margin:0 0 6px;color:var(--gold);font-weight:800;font-size:8px;text-align:center}
+.tag{width:fit-content;margin:16px auto 0;background:var(--s1);border:1px solid #3a3116;color:var(--gold2);font-size:12px;font-weight:700;padding:8px 12px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+
+/* pain */
+.pain{border-top:1px solid var(--line)}
+.pain .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.pain p{color:#cfc9bc}
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.checks li{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:12px;padding:16px 18px;color:#e2ddd2}
+
+/* solution */
+.solution{background:linear-gradient(180deg,var(--bg),#100e08 60%,var(--bg))}
+.solution .lead{margin-top:18px}
+
+/* features */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.f{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:24px}
+.f .k{font-family:var(--display);color:var(--gold);font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.f h3{margin:8px 0 6px;font-size:19px}
+.f p{margin:0;color:var(--muted);font-size:15.5px}
+
+/* report highlight */
+.report .wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:48px;align-items:center}
+.rep{background:#0a0a09;border:1px solid #3a3116;border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.rep small{color:var(--gold);font-size:10px;letter-spacing:.2em;font-weight:800}
+.rep h4{font-family:var(--display);margin:2px 0 14px;font-size:22px}
+.rep h4 span{color:var(--gold)}
+.rep .top{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;margin-bottom:12px}
+.rep .hl{font-family:var(--display);font-size:16px;line-height:1.3;font-weight:700}
+.rep .hl b{color:var(--gold)}
+.ins{display:grid;gap:8px}
+.in{display:grid;grid-template-columns:28px 1fr;gap:10px;background:#141412;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:10px 12px;font-size:13px}
+.in.bad{border-left-color:var(--bad)} .in.warn{border-left-color:#f0c75e}
+.in i{font-style:normal;width:28px;height:28px;border-radius:8px;background:#1c1b18;display:grid;place-items:center;color:var(--gold);font-weight:800}
+.in.bad i{color:var(--bad)} .in.warn i{color:#f0c75e}
+.in b{display:block}
+.in span{color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;counter-reset:s;list-style:none;padding:0}
+.steps li{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:26px;counter-increment:s}
+.steps li::before{content:"0" counter(s);font-family:var(--display);font-size:40px;font-weight:800;color:var(--gold);display:block;line-height:1;margin-bottom:12px}
+.steps b{display:block;font-size:19px;margin-bottom:4px}
+.steps span{color:var(--muted);font-size:15.5px}
+
+/* who */
+.who .wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.who ul{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.who li{padding-left:28px;position:relative;color:#e2ddd2}
+.who .yes li::before{content:"✓";position:absolute;left:0;color:var(--gold);font-weight:800}
+.who .no li::before{content:"✕";position:absolute;left:0;color:var(--bad);font-weight:800}
+.box{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:30px}
+
+/* author */
+.author .box{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;background:linear-gradient(135deg,#19150a,var(--s1))}
+.avatar{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f0dc9a,#8a6d1c);display:grid;place-items:center;font-family:var(--display);font-size:44px;font-weight:800;color:#120f05}
+.author p{margin:10px 0 0;color:#cfc9bc}
+
+/* offer */
+.offer{background:radial-gradient(60% 80% at 50% 0%,#2c230b,transparent 70%)}
+.price{max-width:560px;margin:36px auto 0;background:var(--s1);border:1px solid #4a3d14;border-radius:22px;padding:34px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.price ul{list-style:none;padding:0;margin:0 0 24px;text-align:left;display:grid;gap:10px}
+.price li::before{content:"✓  ";color:var(--gold);font-weight:800}
+.price .old{color:var(--muted);font-size:15px}
+.price .val{font-family:var(--display);font-size:64px;font-weight:800;color:var(--gold);line-height:1;margin:6px 0}
+.price .inst{color:#cfc9bc;margin-bottom:24px}
+.guar{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:center;text-align:left;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.seal{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--gold);line-height:1;text-align:center;font-size:20px}
+.seal small{display:block;font-size:8px;letter-spacing:.1em}
+.guar p{margin:0;font-size:14.5px;color:#cfc9bc}
+
+/* faq */
+.faq{max-width:780px;margin:30px auto 0}
+details{border-bottom:1px solid var(--line);padding:18px 0}
+summary{cursor:pointer;font-weight:700;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::after{content:"+";color:var(--gold);font-size:24px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{color:#cfc9bc;margin:10px 0 0}
+
+/* final */
+.final{text-align:center;border-top:1px solid #2a2310}
+.final .lead{margin:18px auto 30px}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font-size:13px;text-align:center}
+
+.center{text-align:center}.center .lead{margin-left:auto;margin-right:auto}
+@media (max-width:900px){
+  section{padding-block:64px}
+  .hero .wrap,.pain .wrap,.report .wrap,.who .wrap{grid-template-columns:1fr}
+  .feat,.steps{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .cards{grid-template-columns:repeat(3,1fr)}
+  .author .box{grid-template-columns:1fr;text-align:center;justify-items:center}
+  .btn{width:100%;justify-content:center}
+  .bar .btn{width:auto}
+  .rep .top{grid-template-columns:90px 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.cover{border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px #3a3116;display:block;width:100%;height:auto}
+.shot{margin:0;background:var(--s1);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.shot img{display:block;width:100%;height:auto}
+.shot figcaption{padding:14px 18px;font-size:15px;color:#cfc9bc}
+.shot figcaption b{color:var(--fg);display:block;font-size:16px}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:40px;text-align:left}
+.gallery .wide{grid-column:1/-1}
+@media (max-width:760px){.gallery{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <div class="brand">MEU CONTROLE <span>FINANCEIRO</span></div>
+    <a class="btn" href="https://pay.hotmart.com/O108180635R" rel="noopener">Quero minha planilha</a>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Planilha no Google Planilhas</span>
+      <h1>Descubra para onde vai o seu dinheiro e <span class="gold">termine o mês com sobra.</span></h1>
+      <p class="lead">A planilha Meu Controle Financeiro organiza suas receitas, gastos, metas e dívidas e ainda te entrega um relatório com nota do mês e o que fazer para melhorar.</p>
+      <a class="btn" href="https://pay.hotmart.com/O108180635R" rel="noopener">Quero minha planilha por R$ 27,90 →</a>
+      <div class="trust"><span>Acesso imediato</span><span>Garantia de 7 dias</span><span>Funciona no Google Planilhas</span></div>
+    </div>
+    <div><img class="cover" src="img/capa.jpg" alt="Planilha Meu Controle Financeiro aberta no notebook e no celular" width="1254" height="1254"></div>
+  </div>
+</section>
+
+<section class="pain">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Você se reconhece?</span>
+      <h2>O salário cai e, quando você vê, <span class="gold">já acabou?</span></h2>
+      <p>Você não gasta com nada absurdo. Mesmo assim, o dinheiro some antes do fim do mês, a fatura do cartão assusta e guardar dinheiro fica sempre para o mês que vem.</p>
+      <p>O problema quase nunca é falta de disciplina. É falta de enxergar: sem saber quanto entra, quanto sai e para onde vai, não dá para decidir o que cortar nem quanto guardar.</p>
+    </div>
+    <ul class="checks">
+      <li>Você não sabe quanto gastou com comida fora ou aplicativo este mês</li>
+      <li>Conta esquecida vira juros e multa</li>
+      <li>A reserva de emergência nunca sai do papel</li>
+      <li>Parcelas pequenas somadas comem metade da renda</li>
+    </ul>
+  </div>
+</section>
+
+<section class="solution">
+  <div class="wrap center">
+    <span class="eyebrow">A solução</span>
+    <h2>Seu dinheiro organizado em <span class="gold">10 minutos por semana.</span></h2>
+    <p class="lead">A Meu Controle Financeiro é uma planilha pronta no Google Planilhas. Você só anota o que entra e o que sai. O resto ela faz sozinha: soma, compara com o seu orçamento, mostra gráficos e aponta o que precisa de atenção.</p>
+    <p class="lead">Nada de fórmula para montar nem planilha em branco. Ela já vem com as categorias do dia a dia, um guia passo a passo de cada aba e um exemplo preenchido.</p>
+    <div class="feat" style="text-align:left">
+      <div class="f"><div class="k">Painel</div><h3>Seu mês em uma tela</h3><p>Receitas, despesas, investimentos, saldo, taxa de poupança e contas a pagar, com gráficos do ano.</p></div>
+      <div class="f"><div class="k">Lançamentos</div><h3>Anotar é rápido</h3><p>Lista de categorias pronta. Tipo, mês e ano se preenchem sozinhos.</p></div>
+      <div class="f"><div class="k">Orçamento</div><h3>Limite por categoria</h3><p>Veja na hora o que passou do planejado, com barra de progresso.</p></div>
+      <div class="f"><div class="k">Resumo mensal</div><h3>Mês a mês</h3><p>Compare quanto gastou em cada categoria ao longo do ano.</p></div>
+      <div class="f"><div class="k">Metas e reserva</div><h3>Quanto guardar</h3><p>Saiba o valor por mês para viajar, trocar de carro ou montar sua reserva de emergência.</p></div>
+      <div class="f"><div class="k">Dívidas</div><h3>O custo real</h3><p>Veja quanto você paga de juros e quanto da renda está comprometido.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="por-dentro">
+  <div class="wrap center">
+    <span class="eyebrow">Veja por dentro</span>
+    <h2>Prints reais da <span class="gold">planilha.</span></h2>
+    <p class="lead">Tudo o que aparece abaixo é a planilha de verdade, no Google Planilhas, preenchida com os dados de exemplo que já vêm nela.</p>
+    <div class="gallery">
+      <figure class="shot wide"><img src="img/painel.jpg" alt="Aba Painel com receitas, despesas, saldo e gráficos do ano" width="981" height="586" loading="lazy"><figcaption><b>Painel</b>Escolha o mês e veja tudo de uma vez: cartões, gráficos do ano e saldo acumulado.</figcaption></figure>
+      <figure class="shot"><img src="img/categorias.jpg" alt="Para onde foi o dinheiro e orçado versus realizado" width="829" height="603" loading="lazy"><figcaption><b>Para onde foi o dinheiro</b>As categorias que mais pesaram e o orçado × realizado com barra de progresso.</figcaption></figure>
+      <figure class="shot"><img src="img/metas.jpg" alt="Aba Metas e reserva de emergência" width="792" height="609" loading="lazy"><figcaption><b>Metas e reserva</b>Quanto guardar por mês para cada objetivo e para a reserva de emergência.</figcaption></figure>
+      <figure class="shot"><img src="img/dividas.jpg" alt="Aba Dívidas com custo total e comprometimento da renda" width="985" height="643" loading="lazy"><figcaption><b>Dívidas</b>O custo real das parcelas e quanto da renda está comprometido.</figcaption></figure>
+      <figure class="shot"><img src="img/configuracoes.jpg" alt="Aba Configurações com categorias e contas" width="920" height="644" loading="lazy"><figcaption><b>Configurações</b>Categorias e contas prontas, que você pode renomear do seu jeito.</figcaption></figure>
+      <figure class="shot wide"><img src="img/orcamento.jpg" alt="Aba Orçamento com valores planejados por mês" width="1205" height="604" loading="lazy"><figcaption><b>Orçamento</b>Planeje receitas, despesas e investimentos mês a mês.</figcaption></figure>
+    </div>
+  </div>
+</section>
+<section class="report">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">O diferencial</span>
+      <h2>Um relatório que <span class="gold">te diz o que fazer.</span></h2>
+      <p class="lead" style="margin-top:18px">Com um clique no menu 📊 Meu Relatório, você recebe uma nota de 0 a 100 para o seu mês, alertas do que saiu do controle, o que melhorou, uma previsão do fim do mês e 3 ações práticas para o mês seguinte.</p>
+      <p class="lead">É como ter uma consultora olhando suas contas todo mês.</p>
+    </div>
+    <div>
+      <figure class="shot"><img src="img/relatorio.jpg" alt="Relatório de setembro com nota 65 de 100 e insights do mês" width="1045" height="609" loading="lazy"><figcaption>Print real do relatório, com os dados de exemplo que vêm na planilha.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap center">
+    <span class="eyebrow">Como funciona</span>
+    <h2>Em 3 passos você <span class="gold">começa hoje.</span></h2>
+    <ol class="steps" style="text-align:left">
+      <li><b>Compre e acesse</b><span>Você recebe o acesso por e-mail na hora.</span></li>
+      <li><b>Faça a sua cópia</b><span>Um clique e a planilha vai para o seu Google Drive. Só você vê os seus dados.</span></li>
+      <li><b>Anote e acompanhe</b><span>Lance seus gastos durante a semana e abra o Painel e o relatório para ver como está o mês.</span></li>
+    </ol>
+    <p class="note" style="margin-top:20px">Você pode lançar pelo computador ou pelo app Google Planilhas no celular. O relatório de insights abre pelo computador.</p>
+  </div>
+</section>
+
+<section class="who">
+  <div class="wrap">
+    <div class="box yes"><h2 style="font-size:28px">É para você se:</h2>
+      <ul><li>Chega ao fim do mês sem saber para onde foi o dinheiro</li><li>Quer começar a guardar dinheiro ou montar sua reserva de emergência</li><li>Já tentou aplicativo ou caderno e desistiu</li><li>Quer enxergar suas dívidas e sair delas com um plano</li></ul></div>
+    <div class="box no"><h2 style="font-size:28px">Não é para você se:</h2>
+      <ul><li>Procura uma ferramenta que puxe os gastos do banco sozinha. Aqui você anota, e é isso que cria consciência sobre o dinheiro</li><li>Não tem nem quer criar uma conta Google (é gratuita)</li></ul></div>
+  </div>
+</section>
+
+<section class="author">
+  <div class="wrap">
+    <div class="box">
+      <div class="avatar" aria-hidden="true">K</div>
+      <div>
+        <span class="eyebrow" style="margin-bottom:6px">Quem criou</span>
+        <h2 style="font-size:30px">Feita por quem organiza finanças todos os dias.</h2>
+        <p>Oi, eu sou a Karolaine. Sou formada em Administração de Empresas, fundadora da Accert Consultoria e há 5 anos ajudo empresas a organizar finanças, processos e números para tomar decisões melhores.</p>
+        <p>Criei a Meu Controle Financeiro levando para a vida pessoal o mesmo método que uso com empresas: registrar, enxergar e agir. Sem planilha complicada, sem termo técnico, só o que você precisa para ter controle de verdade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="offer" id="oferta">
+  <div class="wrap center">
+    <span class="eyebrow">Oferta</span>
+    <h2>Menos do que um lanche por <span class="gold">um ano de controle.</span></h2>
+    <div class="price">
+      <ul>
+        <li>Planilha completa no Google Planilhas</li>
+        <li>Relatório com nota do mês e insights automáticos</li>
+        <li>Guia passo a passo e aulas de como começar</li>
+        <li>Acesso imediato e atualizações pela área de membros</li>
+      </ul>
+      <div class="old">Pagamento único</div>
+      <div class="val num">R$ 27,90</div>
+      <div class="inst">ou em até 9x de R$ 3,67 no cartão</div>
+      <a class="btn" href="https://pay.hotmart.com/O108180635R" rel="noopener">Quero minha planilha →</a>
+      <div class="guar">
+        <div class="seal">7<small>DIAS</small></div>
+        <p><strong>Garantia de 7 dias.</strong> Se a planilha não for para você, peça o reembolso em até 7 dias pela própria Hotmart e receba 100% do valor de volta, sem perguntas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap center">
+    <span class="eyebrow">Dúvidas</span>
+    <h2>Perguntas frequentes</h2>
+    <div class="faq" style="text-align:left">
+      <details><summary>Preciso saber mexer em planilha?</summary><p>Não. Você só preenche data, descrição, categoria e valor. As fórmulas já estão prontas e a aba Início explica cada parte.</p></details>
+      <details><summary>Funciona no Excel?</summary><p>Ela foi feita para o Google Planilhas, que é gratuito. O relatório de insights só funciona no Google Planilhas.</p></details>
+      <details><summary>Funciona no celular?</summary><p>Sim, para lançar e consultar pelo app Google Planilhas. O relatório abre pelo computador.</p></details>
+      <details><summary>Meus dados ficam seguros?</summary><p>Você faz uma cópia só sua no seu Google Drive. Ninguém além de você tem acesso, nem eu.</p></details>
+      <details><summary>Por que o Google mostra um aviso ao abrir o relatório?</summary><p>É o aviso padrão para recursos feitos sob medida. A aula 2 mostra o passo a passo para autorizar, e isso só acontece uma vez.</p></details>
+      <details><summary>Posso usar no próximo ano?</summary><p>Sim. É só trocar o ano na aba Configurações ou fazer uma nova cópia limpa pela área de membros.</p></details>
+      <details><summary>Como recebo o acesso?</summary><p>Na hora, por e-mail, depois que o pagamento é aprovado. No boleto e no Pix, assim que a compensação acontece.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Daqui a 30 dias você pode estar no mesmo lugar ou <span class="gold">sabendo para onde vai cada real.</span></h2>
+    <p class="lead">Comece hoje com 10 minutos por semana. Se não gostar, a garantia de 7 dias te devolve tudo.</p>
+    <a class="btn" href="https://pay.hotmart.com/O108180635R" rel="noopener">Quero minha planilha por R$ 27,90 →</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Meu Controle Financeiro · Pagamento processado com segurança pela Hotmart · Os prints mostram dados de exemplo.</div>
+</footer>
+
+</body>
+</html>
